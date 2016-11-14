@@ -10,7 +10,7 @@ class ActivityLogTestCase(unittest.TestCase):
     def setUp(self):
         self.log_shape = (10, 6)
         mocklog = MockLog((1,) + self.log_shape)
-        self.log_csv = mocklog.mock_csv(-10, 10)[0]
+        self.log_csv = mocklog.mock_csv(-10, 10)
 
     def tearDown(self):
         os.remove(self.log_csv)

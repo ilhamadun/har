@@ -22,7 +22,10 @@ class MockLog:
 
             csv_files.append(filename)
 
-        return csv_files
+        if self.shape[self.NUMBER_OF_ITEM] is 1:
+            return csv_files[0]
+        else:
+            return csv_files
 
     def __generate_csv(self, filename, number_of_rows, number_of_columns, min_value, max_value):
         with open(filename, 'wb') as log:
