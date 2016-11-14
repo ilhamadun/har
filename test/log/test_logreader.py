@@ -5,7 +5,7 @@ from har.log import LogReader
 from log.mocklog import MockLog
 
 
-class ActivityLogTestCase(unittest.TestCase):
+class LogReaderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.log_shape = (10, 6)
