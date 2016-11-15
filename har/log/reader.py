@@ -5,6 +5,12 @@ from os.path import splitext
 
 
 class LogReader:
+    class Metadata:
+        TYPE = 0
+        NUMBER_OF_SENSOR = 1
+        TOTAL_SENSOR_AXIS = 2
+        NUMBER_OF_ENTRY = 3
+
     def __init__(self, filepath):
         self.__file = None
         self.__shape = None
@@ -19,18 +25,18 @@ class LogReader:
         else:
             raise IOError('File format not supported')
 
-        self.__count_shape()
+        self.__read_metadata()
 
-    def __count_shape(self):
+    def __read_metadata(self):
         with open(self.__file, 'rb') as f:
             reader = csv.reader(f)
-            number_of_column = 0
-            for row in reader:
-                number_of_column = len(row)
-                break
+            metadata = reader.next()
 
-            number_of_row = sum(1 for row in reader) + 1
-            self.__shape = (number_of_row, number_of_column)
+            self.__type = metadata[self.Metadata.TYPE]
+            self.__shape = (
+                int(metadata[self.Metadata.NUMBER_OF_ENTRY]),
+                int(metadata[self.Metadata.TOTAL_SENSOR_AXIS])
+            )
 
     def shape(self):
         """ Returns the shape of each log item stored in this class
@@ -44,11 +50,16 @@ class LogReader:
 
     def read(self):
         """ Read csv to numpy array """
+        metadata = []
         data = np.empty(self.__shape)
 
         with open(self.__file, 'rb') as f:
             reader = csv.reader(f)
+            metadata = reader.next()
             for r, row in enumerate(reader):
                 data[r] = np.array(row)
 
-        return data
+        return metadata, data
+
+    def log_type(self):
+        return self.__type

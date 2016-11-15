@@ -10,7 +10,8 @@ class LogReaderTestCase(unittest.TestCase):
     def setUp(self):
         self.log_shape = (10, 6)
         mocklog = MockLog((1,) + self.log_shape)
-        self.log_csv = mocklog.mock_csv(-10, 10)
+        self.log_info = ['TRAINING', '2']
+        self.log_csv = mocklog.mock_csv(self.log_info, -10, 10)
 
     def tearDown(self):
         os.remove(self.log_csv)
@@ -33,9 +34,16 @@ class LogReaderTestCase(unittest.TestCase):
 
     def test_read(self):
         logs = LogReader(self.log_csv)
-        log = logs.read()
+        metadata, log = logs.read()
 
+        self.assertEqual(metadata[logs.Metadata.TYPE], self.log_info[0])
+        self.assertEqual(metadata[logs.Metadata.NUMBER_OF_SENSOR], self.log_info[1])
         self.assertEquals(log.shape, self.log_shape)
+
+    def test_log_type(self):
+        log = LogReader(self.log_csv)
+
+        self.assertTrue(log.log_type(), self.log_info[0])
 
 
 if __name__ == '__main__':

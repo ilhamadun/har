@@ -9,9 +9,10 @@ class LogShaperTestCase(unittest.TestCase):
 
     def setUp(self):
         mock = MockLog((1, 100, 6))
-        csv_file = mock.mock_csv(-10, 10)
+        log_info = ['TRAINING', '2']
+        csv_file = mock.mock_csv(log_info, -10, 10)
         reader = LogReader(csv_file)
-        data = reader.read()
+        data = reader.read()[1]
         self.shaper = LogShaper(data)
 
         os.remove(csv_file)

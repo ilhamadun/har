@@ -9,7 +9,8 @@ class LogExtractorTestCase(unittest.TestCase):
 
     def setUp(self):
         mocklog = MockLog((5, 10, 6))
-        self.log = mocklog.mock_csv(-10, 10)
+        log_info = ['TRAINING', '2']
+        self.log = mocklog.mock_csv(log_info, -10, 10)
         self.log_archive = mocklog.mock_zip(self.log)
 
     def tearDown(self):
