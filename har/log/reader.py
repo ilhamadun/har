@@ -25,9 +25,9 @@ class LogReader:
         else:
             raise IOError('File format not supported')
 
-        self.__read_metadata()
+        self.metadata()
 
-    def __read_metadata(self):
+    def metadata(self):
         with open(self.__file, 'rb') as f:
             reader = csv.reader(f)
             metadata = reader.next()
@@ -37,6 +37,8 @@ class LogReader:
                 int(metadata[self.Metadata.NUMBER_OF_ENTRY]),
                 int(metadata[self.Metadata.TOTAL_SENSOR_AXIS])
             )
+
+            return metadata
 
     def shape(self):
         """ Returns the shape of each log item stored in this class
