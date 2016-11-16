@@ -22,8 +22,7 @@ class LogController:
         f = request.files['file']
 
         if f.mimetype == 'application/zip':
-            subject = SubjectHandler().get_device(request.form['device'])
-            LogHandler().receive_log(subject.id, f)
+            LogHandler().receive_log(request.form['device'], f)
 
             response = jsonify(
                 status="Upload Success",

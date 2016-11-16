@@ -18,21 +18,25 @@ class LogExtractor:
 
         return name_list
 
-    def extract(self, name):
+    def extract(self, name, extract_dir=None):
         """ Extract a file from the archive
 
         Keyword arguments:
         name -- file name to extract
         """
-        extracted_path = None
+        if extract_dir is None:
+            extract_dir = os.path.dirname(os.path.realpath(self.filepath))
+
         with zipfile.ZipFile(self.filepath) as zip_file:
-            extracted_path = zip_file.extract(name)
+            extracted_path = zip_file.extract(name, extract_dir)
 
         return extracted_path
 
-    def extract_all(self):
+    def extract_all(self, extract_dir=None):
         """ Extract all file from the archive """
-        extract_dir = os.path.dirname(os.path.realpath(self.filepath))
+        if extract_dir is None:
+            extract_dir = os.path.dirname(os.path.realpath(self.filepath))
+
         extracted_path = []
         with zipfile.ZipFile(self.filepath) as zip_file:
             zip_file.extractall(extract_dir)
