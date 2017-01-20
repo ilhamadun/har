@@ -22,7 +22,7 @@ class TestLogController():
             os.makedirs(har.app.config['UPLOAD_FOLDER'])
 
         har.db.create_all()
-        self.__create_user('Android Device'.encode(), 'Device Token'.encode())
+        self.device, self.token = SubjectHandler().create('M', 21)
 
         self.number_of_csv_files = 3
         self.__mock_file(self.number_of_csv_files)
@@ -33,11 +33,6 @@ class TestLogController():
 
         shutil.rmtree(har.app.config['UPLOAD_FOLDER'])
         har.db.drop_all()
-
-    def __create_user(self, device, token):
-        self.device = hashlib.sha1(device).hexdigest()
-        self.token = hashlib.sha1(token).hexdigest()
-        SubjectHandler().create(self.device, self.token)
 
     def __mock_file(self, number_of_csv_files):
         mock = MockLog((number_of_csv_files, 100, 6))
