@@ -5,7 +5,7 @@ from .mocklog import MockLog
 from har.log import LogExtractor
 
 
-class TestLogExtractor():
+class TestLogExtractor:
 
     @pytest.fixture
     def setup(self):

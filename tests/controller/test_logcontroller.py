@@ -10,7 +10,7 @@ from har.model import Log
 from tests.log.mocklog import MockLog
 
 
-class TestLogController():
+class TestLogController:
 
     @pytest.fixture
     def setup(self):

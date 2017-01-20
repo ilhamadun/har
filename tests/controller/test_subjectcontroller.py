@@ -5,7 +5,7 @@ from har import app, db
 from har.model import Subject
 
 
-class TestSubjectController():
+class TestSubjectController:
 
     @pytest.fixture
     def setup(self):

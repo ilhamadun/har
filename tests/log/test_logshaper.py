@@ -5,7 +5,7 @@ from .mocklog import MockLog
 from har.log import LogShaper, LogReader
 
 
-class TestLogShaper():
+class TestLogShaper:
 
     @pytest.fixture
     def setup(self):
