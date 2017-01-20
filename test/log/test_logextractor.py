@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from log.mocklog import MockLog
+from .mocklog import MockLog
 from har.log import LogExtractor
 
 

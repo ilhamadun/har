@@ -1,8 +1,8 @@
 import os
 import unittest
 
+from .mocklog import MockLog
 from har.log import LogReader
-from log.mocklog import MockLog
 
 
 class LogReaderTestCase(unittest.TestCase):

@@ -1,2 +1,2 @@
-from log import LogHandler
-from subject import SubjectHandler
+from .log import LogHandler
+from .subject import SubjectHandler

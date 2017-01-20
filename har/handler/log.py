@@ -1,11 +1,12 @@
 import hashlib
 import os
 
+from werkzeug import secure_filename
 from har import app, db
 from har.log import LogExtractor, LogReader
 from har.model import Log
-from subject import SubjectHandler
-from werkzeug import secure_filename
+from .subject import SubjectHandler
+
 
 
 class LogHandler:

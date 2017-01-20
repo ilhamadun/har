@@ -1,13 +1,13 @@
-import har
 import hashlib
 import os
 import shutil
 import unittest
+from io import StringIO
 
-from log.mocklog import MockLog
-from StringIO import StringIO
+import har
 from har.handler import SubjectHandler, LogHandler
 from har.model import Log
+from test.log.mocklog import MockLog
 
 
 class LogTestCase(unittest.TestCase):

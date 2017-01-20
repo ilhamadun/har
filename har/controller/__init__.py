@@ -1,1 +1,1 @@
-from log import LogController
+from .log import LogController
