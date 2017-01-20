@@ -28,9 +28,9 @@ class LogReader:
         self.metadata()
 
     def metadata(self):
-        with open(self.__file, 'rb') as f:
+        with open(self.__file, 'r') as f:
             reader = csv.reader(f)
-            metadata = reader.next()
+            metadata = reader.__next__()
 
             self.__type = metadata[self.Metadata.TYPE]
             self.__shape = (
@@ -55,9 +55,9 @@ class LogReader:
         metadata = []
         data = np.empty(self.__shape)
 
-        with open(self.__file, 'rb') as f:
+        with open(self.__file, 'r') as f:
             reader = csv.reader(f)
-            metadata = reader.next()
+            metadata = reader.__next__()
             for r, row in enumerate(reader):
                 data[r] = np.array(row)
 
