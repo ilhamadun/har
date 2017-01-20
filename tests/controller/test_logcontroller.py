@@ -1,31 +1,38 @@
 import hashlib
 import os
 import shutil
-import unittest
-from io import StringIO
+import pytest
+from io import StringIO, BytesIO
 
 import har
 from har.handler import SubjectHandler, LogHandler
 from har.model import Log
-from test.log.mocklog import MockLog
+from tests.log.mocklog import MockLog
 
 
-class LogTestCase(unittest.TestCase):
+class TestLogController():
 
-    def setUp(self):
+    @pytest.fixture
+    def setup(self):
         har.app.config['TESTING'] = True
         har.app.config['UPLOAD_FOLDER'] = os.getcwd() + '/uploads'
+        har.db.drop_all()
 
         if not os.path.isdir(har.app.config['UPLOAD_FOLDER']):
             os.makedirs(har.app.config['UPLOAD_FOLDER'])
 
         har.db.create_all()
-        self.__create_user('Android Device', 'Device Token')
+        self.__create_user('Android Device'.encode(), 'Device Token'.encode())
 
         self.number_of_csv_files = 3
         self.__mock_file(self.number_of_csv_files)
 
         self.app = har.app.test_client()
+
+        yield
+
+        shutil.rmtree(har.app.config['UPLOAD_FOLDER'])
+        har.db.drop_all()
 
     def __create_user(self, device, token):
         self.device = hashlib.sha1(device).hexdigest()
@@ -37,22 +44,18 @@ class LogTestCase(unittest.TestCase):
         self.log = mock.mock_csv(['TRAINING', '2'], -10, 10)
         self.log_archive = mock.mock_zip(self.log)
 
-    def tearDown(self):
-        shutil.rmtree(har.app.config['UPLOAD_FOLDER'])
-        har.db.drop_all()
-
-    def test_bad_device_identifier(self):
-        device = hashlib.sha1("Bad Device Identifier").hexdigest()
+    def test_bad_device_identifier(self, setup):
+        device = hashlib.sha1("Bad Device Identifier".encode()).hexdigest()
         response = self.app.post('/log/upload', data={'device': device, 'token': 'bad token'})
 
-        self.assertEqual(response.status_code, 401)
+        assert response.status_code == 401
 
-    def test_bad_device_token(self):
+    def test_bad_device_token(self, setup):
         response = self.app.post('/log/upload', data={'device': self.device, 'token': 'bad token'})
 
-        self.assertEqual(response.status_code, 401)
+        assert response.status_code == 401
 
-    def test_upload_good_file(self):
+    def test_upload_good_file(self, setup):
         with open(self.log_archive, 'rb') as file:
             data = {
                 'file': file,
@@ -61,9 +64,9 @@ class LogTestCase(unittest.TestCase):
             }
             response = self.app.post('/log/upload', data=data)
 
-            self.assertEqual(len(Log.query.all()), self.number_of_csv_files)
-            self.assertEqual(Log.query.first().type, 'TRAINING')
-            self.assertEqual(response.status_code, 201)
+            assert len(Log.query.all()) == self.number_of_csv_files
+            assert Log.query.first().type == 'TRAINING'
+            assert response.status_code == 201
 
         self.assert_log_path(self.device, self.log_archive)
 
@@ -75,8 +78,8 @@ class LogTestCase(unittest.TestCase):
 
         for i, log in enumerate(logs):
             log_path = os.path.join(base_path, os.path.basename(self.log[i]))
-            self.assertEqual(log.path, log_path)
+            assert log.path == log_path
 
-    def test_upload_bad_file(self):
-        response = self.app.post('/log/upload', data={'file': (StringIO('bad file content'), 'badfile.txt')})
-        self.assertEqual(response.status_code, 400)
+    def test_upload_bad_file(self, setup):
+        response = self.app.post('/log/upload', data={'file': (BytesIO(b'bad file content'), 'badfile.txt')})
+        assert response.status_code == 400

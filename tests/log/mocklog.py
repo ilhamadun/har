@@ -28,7 +28,7 @@ class MockLog:
             return csv_files
 
     def __generate_csv(self, filename, log_info, number_of_rows, number_of_columns, min_value, max_value):
-        with open(filename, 'wb') as log:
+        with open(filename, 'w') as log:
             writer = csv.writer(log)
 
             log_info.append(str(number_of_columns))
