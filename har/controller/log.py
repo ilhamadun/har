@@ -5,20 +5,20 @@ from har.handler import LogHandler, SubjectHandler
 
 class LogController:
     def upload(self):
-        if self.__authenticate(request):
-            response = self.__handle_file_and_create_response(request)
+        if self.__authenticate():
+            response = self.__handle_file_and_create_response()
         else:
             response = self.__create_failed_authentication_response()
 
         return response
 
-    def __authenticate(self, request):
+    def __authenticate(self):
         device = request.form['device']
         token = request.form['token']
 
         return SubjectHandler().authenticate(device, token)
 
-    def __handle_file_and_create_response(self, request):
+    def __handle_file_and_create_response(self):
         f = request.files['file']
 
         if f.mimetype == 'application/zip':
