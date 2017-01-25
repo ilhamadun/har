@@ -2,8 +2,7 @@ from har import db
 
 
 class Subject(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    device = db.Column(db.String(40), unique=True)
+    device = db.Column(db.String(40), primary_key=True)
     token = db.Column(db.String(60), unique=True)
     user_gender = db.Column(db.String(1))
     user_age = db.Column(db.Integer)

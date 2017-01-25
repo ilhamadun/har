@@ -36,7 +36,7 @@ class TestLogController:
 
     def __mock_file(self, number_of_csv_files):
         mock = MockLog((number_of_csv_files, 100, 6))
-        self.log = mock.mock_csv(['TRAINING', '2'], -10, 10)
+        self.log = mock.mock_csv(['TRAINING#STANDING#HANDHELD', '2'], -10, 10)
         self.log_archive = mock.mock_zip(self.log)
 
     def test_bad_device_identifier(self, setup):
@@ -59,8 +59,12 @@ class TestLogController:
             }
             response = self.app.post('/log/upload', data=data)
 
+            database_entry = Log.query.first() 
+
             assert len(Log.query.all()) == self.number_of_csv_files
-            assert Log.query.first().type == 'TRAINING'
+            assert database_entry.log_type == 'training'
+            assert database_entry.activity == 'standing'
+            assert database_entry.sensor_placement == 'handheld'
             assert response.status_code == 201
 
         self.assert_log_path(self.device, self.log_archive)

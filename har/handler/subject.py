@@ -2,6 +2,7 @@ import random
 import hashlib
 
 from datetime import datetime
+from sqlalchemy import desc
 from flask_bcrypt import generate_password_hash, check_password_hash
 from har import db
 from har.model import Subject
@@ -36,5 +37,8 @@ class SubjectHandler:
         else:
             return False
 
-    def get_device(self, id):
-        return Subject.query.filter_by(device=id).first()
+    def get_device(self, device):
+        return Subject.query.filter_by(device=device).first()
+
+    def getLatest(self, limit):
+        return Subject.query.order_by(desc(Subject.device)).limit(limit).all()

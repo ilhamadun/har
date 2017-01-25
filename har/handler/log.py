@@ -2,6 +2,7 @@ import hashlib
 import os
 
 from werkzeug import secure_filename
+from sqlalchemy import desc
 from har import app, db
 from har.log import LogExtractor, LogReader
 from har.model import Log
@@ -12,6 +13,7 @@ from .subject import SubjectHandler
 class LogHandler:
     def receive_log(self, device, file):
         save_path = self.__save_file(device, file)
+        print("Path: " + save_path)
         extracted_files = self.__extract_file(save_path)
         log_infos = self.__log_info(extracted_files)
 
@@ -49,9 +51,13 @@ class LogHandler:
             metadata = info[0]
             filepath = info[1]
 
+            log_type, activity, sensor_placement = self. __parse_type_metadata(metadata)
+
             log = Log(
                 subject_id,
-                metadata[LogReader.Metadata.TYPE],
+                log_type,
+                activity,
+                sensor_placement,
                 metadata[LogReader.Metadata.NUMBER_OF_SENSOR],
                 metadata[LogReader.Metadata.TOTAL_SENSOR_AXIS],
                 metadata[LogReader.Metadata.NUMBER_OF_ENTRY],
@@ -61,6 +67,23 @@ class LogHandler:
             db.session.add(log)
 
         db.session.commit()
+
+    def __parse_type_metadata(self, metadata):
+        metadata_type = metadata[LogReader.Metadata.TYPE].split('#')
+
+        log_type = None
+        activity = None
+        sensor_placement = None
+
+        if len(metadata_type) > 0:
+            log_type = metadata_type[0].lower()
+        if len(metadata_type) > 1:
+            activity = metadata_type[1].lower()
+        if len(metadata_type) > 2:
+            sensor_placement = metadata_type[2].lower()
+
+        return log_type, activity, sensor_placement
+
 
     def generate_log_directory(self, filepath):
         hasher = hashlib.sha1()
@@ -75,3 +98,6 @@ class LogHandler:
         subject = SubjectHandler().get_device(device)
 
         return subject.logs
+
+    def getLatest(self, limit):
+        return Log.query.order_by(desc(Log.id)).limit(limit).all()
