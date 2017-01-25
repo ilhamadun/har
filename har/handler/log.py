@@ -8,7 +8,7 @@ from sqlalchemy import desc
 from har import app, db
 from har.log import LogExtractor, LogReader
 from har.model import Log
-from .subject import SubjectHandler
+from .subject import get_subject
 
 
 def receive_log(device, file):
@@ -114,7 +114,7 @@ def get_all_log_from_device(device):
         A list of har.model.Log entry from database.
 
     """
-    subject = SubjectHandler().get_device(device)
+    subject = get_subject(device)
 
     return subject.logs
 

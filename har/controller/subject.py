@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from har.handler import SubjectHandler
+from har.handler.subject import create_subject
 
 
 class SubjectController:
@@ -22,7 +22,7 @@ class SubjectController:
             'temperature': request.form.get('temperature', False)
         }
 
-        device, token = SubjectHandler().create(user_gender, user_age, sensors)
+        device, token = create_subject(user_gender, user_age, sensors)
 
         response = jsonify(status="Register Success", message="Your device has been registered.",
                            device=device, token=token)

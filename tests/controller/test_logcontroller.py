@@ -5,7 +5,8 @@ import pytest
 from io import StringIO, BytesIO
 
 import har
-from har.handler import log, SubjectHandler
+from har.handler import log
+from har.handler.subject import create_subject
 from har.model import Log
 from tests.log.mocklog import MockLog
 
@@ -22,7 +23,7 @@ class TestLogController:
             os.makedirs(har.app.config['UPLOAD_FOLDER'])
 
         har.db.create_all()
-        self.device, self.token = SubjectHandler().create('M', 21)
+        self.device, self.token = create_subject('M', 21)
 
         self.number_of_csv_files = 3
         self.__mock_file(self.number_of_csv_files)

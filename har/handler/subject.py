@@ -1,3 +1,5 @@
+"""Helper functions to handle the Subject model."""
+
 import random
 import hashlib
 
@@ -8,37 +10,77 @@ from har import db
 from har.model import Subject
 
 
-class SubjectHandler:
-    def create(self, user_gender, user_age, sensors={}):
-        device, token = self.__generate_device_and_token()
-        token_hash = generate_password_hash(token)
-        subject = Subject(device, token_hash, user_gender, user_age, sensors)
+def create_subject(user_gender, user_age, sensors=None):
+    """Create a new subject.
 
-        db.session.add(subject)
-        db.session.commit()
+    Args:
+        user_gender: The subject's gender.
+        user_age: The subject's age.
+        sensor: List of available sensor on the subject's device.
 
-        return device, token
+    Returns:
+        Device identifier and it's authentification token.
+    """
+    device, token = _generate_device_and_token()
+    token_hash = generate_password_hash(token)
 
-    def __generate_device_and_token(self):
-        now = datetime.now().microsecond
-        device = now + random.randint(-6000, 6000)
-        token = now + random.randint(-6000, 6000)
+    if sensors is None:
+        sensors = {}
 
-        device_hash = hashlib.sha1(str(device).encode()).hexdigest()
-        token_hash = hashlib.sha1(str(token).encode()).hexdigest()
+    subject = Subject(device, token_hash, user_gender, user_age, sensors)
 
-        return device_hash, token_hash
+    db.session.add(subject)
+    db.session.commit()
 
-    def authenticate(self, device, token):
-        subject = Subject.query.filter_by(device=device).first()
+    return device, token
 
-        if subject:
-            return check_password_hash(subject.token, token)
-        else:
-            return False
+def _generate_device_and_token():
+    now = datetime.now().microsecond
+    device = now + random.randint(-6000, 6000)
+    token = now + random.randint(-6000, 6000)
 
-    def get_device(self, device):
-        return Subject.query.filter_by(device=device).first()
+    device_hash = hashlib.sha1(str(device).encode()).hexdigest()
+    token_hash = hashlib.sha1(str(token).encode()).hexdigest()
 
-    def getLatest(self, limit):
-        return Subject.query.order_by(desc(Subject.device)).limit(limit).all()
+    return device_hash, token_hash
+
+def authenticate(device, token):
+    """Authenticate subject
+
+    Args:
+        device: Device identifier.
+        token: Authentification token.
+
+    Returns:
+        Whether the subject is authenticated or not.
+
+    """
+    subject = Subject.query.filter_by(device=device).first()
+
+    if subject:
+        return check_password_hash(subject.token, token)
+    else:
+        return False
+
+def get_subject(device):
+    """Retreive a device from database.
+
+    Args:
+        device: Device identifier
+
+    Returns:
+        A single Subject from database with matching device identifier.
+
+    """
+    return Subject.query.filter_by(device=device).first()
+
+def get_latest(limit):
+    """Get latest Subjects.
+
+    Args:
+        limit: Number of Subjects to retreive
+
+    Returns:
+        A list of har.model.Subject entry from database.
+    """
+    return Subject.query.order_by(desc(Subject.device)).limit(limit).all()

@@ -1,6 +1,6 @@
 from flask import request
 from flask.json import jsonify
-from har.handler import SubjectHandler
+from har.handler.subject import authenticate
 from har.handler.log import receive_log
 
 
@@ -17,7 +17,7 @@ class LogController:
         device = request.form['device']
         token = request.form['token']
 
-        return SubjectHandler().authenticate(device, token)
+        return authenticate(device, token)
 
     def __handle_file_and_create_response(self):
         f = request.files['file']
