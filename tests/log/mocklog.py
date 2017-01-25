@@ -12,11 +12,13 @@ class MockLog:
     def __init__(self, shape):
         self.shape = shape
         self.__bast_path = os.getcwd()
+        self.mocked_file = 0
 
     def mock_csv(self, log_info, min_value, max_value):
         csv_files = []
         for i in range(self.shape[self.NUMBER_OF_ITEM]):
-            filename = self.__bast_path + '/log-' + str(i + 1) + '.csv'
+            self.mocked_file = self.mocked_file + 1
+            filename = self.__bast_path + '/log-' + str(self.mocked_file) + '.csv'
             self.__generate_csv(filename, log_info, self.shape[self.NUMBER_OF_ROW],
                                 self.shape[self.NUMBER_OF_COLUMN], min_value, max_value)
 

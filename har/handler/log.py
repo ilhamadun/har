@@ -65,9 +65,9 @@ def _store_to_database(subject_id, log_info):
 
         log = Log(
             subject_id,
-            log_type,
-            activity,
-            sensor_placement,
+            log_type.lower(),
+            activity.lower(),
+            sensor_placement.lower(),
             metadata[LogReader.Metadata.NUMBER_OF_SENSOR],
             metadata[LogReader.Metadata.TOTAL_SENSOR_AXIS],
             metadata[LogReader.Metadata.NUMBER_OF_ENTRY],
@@ -86,13 +86,23 @@ def _parse_type_metadata(metadata):
     sensor_placement = None
 
     if len(metadata_type) > 0:
-        log_type = metadata_type[0].lower()
+        log_type = metadata_type[0]
     if len(metadata_type) > 1:
-        activity = metadata_type[1].lower()
+        activity = metadata_type[1]
     if len(metadata_type) > 2:
-        sensor_placement = metadata_type[2].lower()
+        sensor_placement = metadata_type[2]
 
     return log_type, activity, sensor_placement
+
+def parse_activity_from_metadata(metadata):
+    """Parse activity name from metadata
+
+    Args:
+        metadata: List of metadata from log file
+
+    Returns
+        Activity name from metadata"""
+    return _parse_type_metadata(metadata)[1]
 
 
 def _generate_log_directory(filepath):
