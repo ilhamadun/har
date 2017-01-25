@@ -1,3 +1,5 @@
+"""Helper functions to handle the Log model."""
+
 import hashlib
 import os
 
@@ -9,95 +11,120 @@ from har.model import Log
 from .subject import SubjectHandler
 
 
+def receive_log(device, file):
+    """Receive log file from a device.
 
-class LogHandler:
-    def receive_log(self, device, file):
-        save_path = self.__save_file(device, file)
-        print("Path: " + save_path)
-        extracted_files = self.__extract_file(save_path)
-        log_infos = self.__log_info(extracted_files)
+    Extract log files, and store it's information to database. The log file will be stored in
+    a directory based on the file hash.
 
-        return self.__store_to_database(device, log_infos)
+    Args:
+        device: Device identifier.
+        file: File received from the device.
 
-    def __save_file(self, device, file):
-        filename = secure_filename(os.path.basename(file.filename))
-        save_dir = os.path.join(device[:2], device[2:])
-        save_dir = os.path.join('/tmp', save_dir)
+    """
+    save_path = _save_file(device, file)
+    print("Path: " + save_path)
+    extracted_files = _extract_file(save_path)
+    log_info = _get_log_info(extracted_files)
 
-        if not os.path.isdir(save_dir):
-            os.makedirs(save_dir)
+    return _store_to_database(device, log_info)
 
-        save_path = os.path.join(save_dir, filename)
-        file.save(save_path)
+def _save_file(device, file):
+    filename = secure_filename(os.path.basename(file.filename))
+    save_dir = os.path.join(device[:2], device[2:])
+    save_dir = os.path.join('/tmp', save_dir)
 
-        return save_path
+    if not os.path.isdir(save_dir):
+        os.makedirs(save_dir)
 
-    def __extract_file(self, path):
-        log_dir = self.generate_log_directory(path)
-        extract_path = os.path.join(app.config['UPLOAD_FOLDER'], log_dir)
-        return LogExtractor(path).extract_all(extract_path)
+    save_path = os.path.join(save_dir, filename)
+    file.save(save_path)
 
-    def __log_info(self, files):
-        log_info = []
-        for f in files:
-            reader = LogReader(f)
-            metadata = reader.metadata()
-            log_info.append([metadata, f])
+    return save_path
 
-        return log_info
+def _extract_file(path):
+    log_dir = _generate_log_directory(path)
+    extract_path = os.path.join(app.config['UPLOAD_FOLDER'], log_dir)
+    return LogExtractor(path).extract_all(extract_path)
 
-    def __store_to_database(self, subject_id, log_infos):
-        for info in log_infos:
-            metadata = info[0]
-            filepath = info[1]
+def _get_log_info(files):
+    log_info = []
+    for log_file in files:
+        reader = LogReader(log_file)
+        metadata = reader.metadata()
+        log_info.append([metadata, log_file])
 
-            log_type, activity, sensor_placement = self. __parse_type_metadata(metadata)
+    return log_info
 
-            log = Log(
-                subject_id,
-                log_type,
-                activity,
-                sensor_placement,
-                metadata[LogReader.Metadata.NUMBER_OF_SENSOR],
-                metadata[LogReader.Metadata.TOTAL_SENSOR_AXIS],
-                metadata[LogReader.Metadata.NUMBER_OF_ENTRY],
-                filepath
-            )
+def _store_to_database(subject_id, log_info):
+    for info in log_info:
+        metadata = info[0]
+        filepath = info[1]
 
-            db.session.add(log)
+        log_type, activity, sensor_placement = _parse_type_metadata(metadata)
 
-        db.session.commit()
+        log = Log(
+            subject_id,
+            log_type,
+            activity,
+            sensor_placement,
+            metadata[LogReader.Metadata.NUMBER_OF_SENSOR],
+            metadata[LogReader.Metadata.TOTAL_SENSOR_AXIS],
+            metadata[LogReader.Metadata.NUMBER_OF_ENTRY],
+            filepath
+        )
 
-    def __parse_type_metadata(self, metadata):
-        metadata_type = metadata[LogReader.Metadata.TYPE].split('#')
+        db.session.add(log)
 
-        log_type = None
-        activity = None
-        sensor_placement = None
+    db.session.commit()
 
-        if len(metadata_type) > 0:
-            log_type = metadata_type[0].lower()
-        if len(metadata_type) > 1:
-            activity = metadata_type[1].lower()
-        if len(metadata_type) > 2:
-            sensor_placement = metadata_type[2].lower()
+def _parse_type_metadata(metadata):
+    metadata_type = metadata[LogReader.Metadata.TYPE].split('#')
 
-        return log_type, activity, sensor_placement
+    log_type = None
+    activity = None
+    sensor_placement = None
+
+    if len(metadata_type) > 0:
+        log_type = metadata_type[0].lower()
+    if len(metadata_type) > 1:
+        activity = metadata_type[1].lower()
+    if len(metadata_type) > 2:
+        sensor_placement = metadata_type[2].lower()
+
+    return log_type, activity, sensor_placement
 
 
-    def generate_log_directory(self, filepath):
-        hasher = hashlib.sha1()
-        with open(filepath, 'rb') as f:
-            for chunk in iter(lambda: f.read(4096), b''):
-                hasher.update(chunk)
+def _generate_log_directory(filepath):
+    hasher = hashlib.sha1()
+    with open(filepath, 'rb') as log_file:
+        for chunk in iter(lambda: log_file.read(4096), b''):
+            hasher.update(chunk)
 
-        file_hash = hasher.hexdigest()
-        return file_hash[:2] + '/' + file_hash[2:]
+    file_hash = hasher.hexdigest()
+    return file_hash[:2] + '/' + file_hash[2:]
 
-    def get_all_log_from_device(self, device):
-        subject = SubjectHandler().get_device(device)
+def get_all_log_from_device(device):
+    """Get all Log from a certain device.
 
-        return subject.logs
+    Args:
+        device: Device identifier.
 
-    def getLatest(self, limit):
-        return Log.query.order_by(desc(Log.id)).limit(limit).all()
+    Returns:
+        A list of har.model.Log entry from database.
+
+    """
+    subject = SubjectHandler().get_device(device)
+
+    return subject.logs
+
+def get_latest(limit=1):
+    """Get latest Logs.
+
+    Args:
+        limit: Number of Logs to retreive
+
+    Returns:
+        A list of har.model.Log entry from database.
+    """
+    return Log.query.order_by(desc(Log.id)).limit(limit).all()

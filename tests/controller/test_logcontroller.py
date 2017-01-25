@@ -5,7 +5,7 @@ import pytest
 from io import StringIO, BytesIO
 
 import har
-from har.handler import SubjectHandler, LogHandler
+from har.handler import log, SubjectHandler
 from har.model import Log
 from tests.log.mocklog import MockLog
 
@@ -70,14 +70,14 @@ class TestLogController:
         self.assert_log_path(self.device, self.log_archive)
 
     def assert_log_path(self, device, filepath):
-        log_dir = LogHandler().generate_log_directory(filepath)
+        log_dir = log._generate_log_directory(filepath)
         base_path = os.path.join(har.app.config['UPLOAD_FOLDER'], log_dir)
 
-        logs = LogHandler().get_all_log_from_device(device)
+        logs = log.get_all_log_from_device(device)
 
-        for i, log in enumerate(logs):
+        for i, log_file in enumerate(logs):
             log_path = os.path.join(base_path, os.path.basename(self.log[i]))
-            assert log.path == log_path
+            assert log_file.path == log_path
 
     def test_upload_bad_file(self, setup):
         response = self.app.post('/log/upload', data={'file': (BytesIO(b'bad file content'), 'badfile.txt')})

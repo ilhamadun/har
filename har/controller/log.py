@@ -1,6 +1,7 @@
 from flask import request
 from flask.json import jsonify
-from har.handler import LogHandler, SubjectHandler
+from har.handler import SubjectHandler
+from har.handler.log import receive_log
 
 
 class LogController:
@@ -22,7 +23,7 @@ class LogController:
         f = request.files['file']
 
         if f.mimetype == 'application/zip':
-            LogHandler().receive_log(request.form['device'], f)
+            receive_log(request.form['device'], f)
 
             response = jsonify(
                 status="Upload Success",
