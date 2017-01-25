@@ -1,51 +1,57 @@
+"""Controller for request to /log URLs"""
+
 from flask import request
 from flask.json import jsonify
 from har.handler.subject import authenticate
 from har.handler.log import receive_log
 
 
-class LogController:
-    def upload(self):
-        if self.__authenticate():
-            response = self.__handle_file_and_create_response()
-        else:
-            response = self.__create_failed_authentication_response()
+def upload():
+    """Authenticate and handle file upload.
 
-        return response
+    Returns:
+        HTTP response with Content-Type application/json.
+    """
+    if _authenticate():
+        response = _handle_file()
+    else:
+        response = _authentication_failed_response()
 
-    def __authenticate(self):
-        device = request.form['device']
-        token = request.form['token']
+    return response
 
-        return authenticate(device, token)
+def _authenticate():
+    device = request.form['device']
+    token = request.form['token']
 
-    def __handle_file_and_create_response(self):
-        f = request.files['file']
+    return authenticate(device, token)
 
-        if f.mimetype == 'application/zip':
-            receive_log(request.form['device'], f)
+def _handle_file():
+    file = request.files['file']
 
-            response = jsonify(
-                status="Upload Success",
-                message="Your log files has been stored"
-            )
-            response.status_code = 201
+    if file.mimetype == 'application/zip':
+        receive_log(request.form['device'], file)
 
-        else:
-            response = jsonify(
-                status="Upload Failed",
-                message="File corrupted, please reupload the log"
-            )
-            response.status_code = 400
+        response = jsonify(
+            status="Upload Success",
+            message="Your log files has been stored"
+        )
+        response.status_code = 201
 
-        return response
-
-    def __create_failed_authentication_response(self):
+    else:
         response = jsonify(
             status="Upload Failed",
-            message="Authentication Failed"
+            message="File corrupted, please reupload the log"
         )
+        response.status_code = 400
 
-        response.status_code = 401
+    return response
 
-        return response
+def _authentication_failed_response():
+    response = jsonify(
+        status="Upload Failed",
+        message="Authentication Failed"
+    )
+
+    response.status_code = 401
+
+    return response

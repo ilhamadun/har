@@ -1,32 +1,38 @@
+"""Controller for request to /subject URLs"""
+
 from flask import request, jsonify
 from har.handler.subject import create_subject
 
 
-class SubjectController:
-    def register(self):
-        user_gender = request.form['user_gender']
-        user_age = request.form['user_age']
-        sensors = {
-            'accelerometer': request.form.get('accelerometer', False),
-            'ambient_temperature': request.form.get('ambient_temperature', False),
-            'gravity': request.form.get('gravity', False),
-            'gyroscope': request.form.get('gyroscope', False),
-            'light': request.form.get('light', False),
-            'linear_accelerometer': request.form.get('linear_accelerometer', False),
-            'magnetic_field': request.form.get('magnetic_field', False),
-            'orientation': request.form.get('orientation', False),
-            'pressure': request.form.get('pressure', False),
-            'proximity': request.form.get('proximity', False),
-            'relative_humidity': request.form.get('relative_humidity', False),
-            'rotation_vector': request.form.get('rotation_vector', False),
-            'temperature': request.form.get('temperature', False)
-        }
+def register():
+    """Register a new subject
 
-        device, token = create_subject(user_gender, user_age, sensors)
+    Returns:
+        HTTP response with Content-Type application/json.
+    """
+    user_gender = request.form['user_gender']
+    user_age = request.form['user_age']
+    sensors = {
+        'accelerometer': request.form.get('accelerometer', False),
+        'ambient_temperature': request.form.get('ambient_temperature', False),
+        'gravity': request.form.get('gravity', False),
+        'gyroscope': request.form.get('gyroscope', False),
+        'light': request.form.get('light', False),
+        'linear_accelerometer': request.form.get('linear_accelerometer', False),
+        'magnetic_field': request.form.get('magnetic_field', False),
+        'orientation': request.form.get('orientation', False),
+        'pressure': request.form.get('pressure', False),
+        'proximity': request.form.get('proximity', False),
+        'relative_humidity': request.form.get('relative_humidity', False),
+        'rotation_vector': request.form.get('rotation_vector', False),
+        'temperature': request.form.get('temperature', False)
+    }
 
-        response = jsonify(status="Register Success", message="Your device has been registered.",
-                           device=device, token=token)
+    device, token = create_subject(user_gender, user_age, sensors)
 
-        response.status_code = 201
+    response = jsonify(status="Register Success", message="Your device has been registered.",
+                       device=device, token=token)
 
-        return response
+    response.status_code = 201
+
+    return response
