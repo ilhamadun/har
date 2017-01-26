@@ -16,7 +16,7 @@ class TestLogController:
     @pytest.fixture
     def setup(self):
         har.app.config['TESTING'] = True
-        har.app.config['UPLOAD_FOLDER'] = os.getcwd() + '/uploads'
+        har.app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'test_uploads')
         har.db.drop_all()
 
         if not os.path.isdir(har.app.config['UPLOAD_FOLDER']):
