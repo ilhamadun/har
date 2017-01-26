@@ -1,13 +1,18 @@
 """Controller for request to /log URLs"""
 
 import os
-from flask import request, send_from_directory
+from flask import request, send_from_directory, render_template
 from flask.json import jsonify
 from har.handler.subject import authenticate
 from har.handler import log as log_handler
 from har.handler import dataset as dataset_handler
 from .url import redirect_back
 
+
+def overview():
+    """Render page for overview of log"""
+    logs = log_handler.get_latest(10)
+    return render_template('log.html', logs=logs)
 
 def upload():
     """Authenticate and handle file upload.

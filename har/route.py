@@ -12,6 +12,11 @@ def index():
     """Home page."""
     return redirect(url_for('status'))
 
+@app.route('/subject')
+def subject_overview():
+    """Subject overview page"""
+    return subject_controller.overview()
+
 @app.route('/subject/register', methods=['POST'])
 def register():
     """POST request to register new subject"""
@@ -21,6 +26,11 @@ def register():
 def delete_subject(device):
     """Delete subject for given device."""
     return subject_controller.delete(device)
+
+@app.route('/log')
+def log_overview():
+    """Log overview page"""
+    return log_controller.overview()
 
 @app.route('/log/upload', methods=['POST'])
 def upload_log():

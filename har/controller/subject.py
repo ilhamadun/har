@@ -1,9 +1,14 @@
 """Controller for request to /subject URLs"""
 
-from flask import request, jsonify
-from har.handler.subject import create_subject, delete_subject
+from flask import request, jsonify, render_template
+from har.handler.subject import create_subject, delete_subject, get_latest
 from .url import redirect_back
 
+
+def overview():
+    """Render page for overview of subject"""
+    subjects = get_latest(10)
+    return render_template('subject.html', subjects=subjects)
 
 def register():
     """Register a new subject
