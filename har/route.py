@@ -12,7 +12,7 @@ from har.controller import user as user_controller
 @app.route('/')
 def index():
     """Home page."""
-    return redirect(url_for('status'))
+    return redirect(url_for('log_overview'))
 
 @app.route('/subject')
 @login_required
@@ -52,11 +52,6 @@ def download_dataset(dataset_type):
 def delete_log(log_id):
     """Delete log for given id."""
     return log_controller.delete(log_id)
-
-@app.route('/status', methods=['GET'])
-def status():
-    """GET request to show status page"""
-    return status_controller.status()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
