@@ -2,10 +2,9 @@ from datetime import datetime
 from har import db
 
 
-
 class Log(db.Model):
     STATUS_PENDING = "pending"
-    STATUS_PENDING = "trained"
+    STATUS_TRAINED = "trained"
 
     id = db.Column(db.Integer, primary_key=True)
     subject_id = db.Column(db.Integer, db.ForeignKey('subject.device'))

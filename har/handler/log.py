@@ -23,7 +23,6 @@ def receive_log(device, file):
 
     """
     save_path = _save_file(device, file)
-    print("Path: " + save_path)
     extracted_files = _extract_file(save_path)
     log_info = _get_log_info(extracted_files)
 
@@ -114,6 +113,20 @@ def _generate_log_directory(filepath):
     file_hash = hasher.hexdigest()
     return file_hash[:2] + '/' + file_hash[2:]
 
+def get_logs(limit=None):
+    """Get all type of Logs with limit.
+
+    Args:
+        limit: Number of Logs to retreive.
+
+    Returns:
+        A list of har.model.Log entry from database.
+    """
+    if limit:
+        return Log.query.limit(limit).all()
+    else:
+        return Log.query.all()
+
 def get_all_log_from_device(device):
     """Get all Log from a certain device.
 
@@ -132,9 +145,28 @@ def get_latest(limit=1):
     """Get latest Logs.
 
     Args:
-        limit: Number of Logs to retreive
+        limit: Number of Logs to retreive.
 
     Returns:
         A list of har.model.Log entry from database.
     """
     return Log.query.order_by(desc(Log.id)).limit(limit).all()
+
+def get_pending_logs(limit=None):
+    """Get Logs with status: Log.STATUS_PENDING.
+
+    Args:
+        limit: Number of Logs to retreive.
+
+    Return:
+        A list of har.model.Log entry from database.
+
+    """
+    logs = None
+    if limit:
+        logs = Log.query.filter_by(status=Log.STATUS_PENDING).order_by(desc(Log.id))
+        logs = logs.limit(limit).all()
+    else:
+        logs = Log.query.filter_by(status=Log.STATUS_PENDING).order_by(desc(Log.id)).all()
+
+    return logs

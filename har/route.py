@@ -17,6 +17,11 @@ def upload_log():
     """POST request to upload log files"""
     return log_controller.upload()
 
+@app.route('/log/download-dataset/<dataset_type>')
+def download_dataset(dataset_type):
+    """Download activity dataset"""
+    return log_controller.download_dataset(dataset_type)
+
 @app.route('/status', methods=['GET'])
 def status():
     """GET request to show status page"""

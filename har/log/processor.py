@@ -5,7 +5,8 @@ A collection of function to process log file.
 """
 
 import csv
-from zipfile import ZipFile, ZIP_BZIP2
+import os
+from zipfile import ZipFile, ZIP_DEFLATED
 from har.handler import log
 from har.log.activity import get_activity_id
 
@@ -39,12 +40,13 @@ def create_dataset(log_files, output_path):
 
 def make_archive(files, output_path):
     """Make zip archive from several files.
-    
+
     Args:
         files: List of path to files.
         output_path: Path to create the archive.
 
     """
-    with ZipFile(output_path, 'w', compression=ZIP_BZIP2) as zip:
+    assert not isinstance(files, str), "files must be list of path"
+    with ZipFile(output_path, 'w', compression=ZIP_DEFLATED) as zip:
         for filename in files:
-            zip.write(filename)
+            zip.write(filename, os.path.basename(filename))

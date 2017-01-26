@@ -37,7 +37,7 @@ class TestLogController:
 
     def __mock_file(self, number_of_csv_files):
         mock = MockLog((number_of_csv_files, 100, 6))
-        self.log = mock.mock_csv(['TRAINING#STANDING#HANDHELD', '2'], -10, 10)
+        self.log = mock.mock_csv(['TRAINING#STAND#HANDHELD', '2'], -10, 10)
         self.log_archive = mock.mock_zip(self.log)
 
     def test_bad_device_identifier(self, setup):
@@ -51,7 +51,7 @@ class TestLogController:
 
         assert response.status_code == 401
 
-    def test_upload_good_file(self, setup):
+    def __upload_file(self):
         with open(self.log_archive, 'rb') as file:
             data = {
                 'file': file,
@@ -60,13 +60,17 @@ class TestLogController:
             }
             response = self.app.post('/log/upload', data=data)
 
-            database_entry = Log.query.first() 
+        return response
 
-            assert len(Log.query.all()) == self.number_of_csv_files
-            assert database_entry.log_type == 'training'
-            assert database_entry.activity == 'standing'
-            assert database_entry.sensor_placement == 'handheld'
-            assert response.status_code == 201
+    def test_upload_good_file(self, setup):
+        response = self.__upload_file()
+        database_entry = Log.query.first() 
+
+        assert len(Log.query.all()) == self.number_of_csv_files
+        assert database_entry.log_type == 'training'
+        assert database_entry.activity == 'stand'
+        assert database_entry.sensor_placement == 'handheld'
+        assert response.status_code == 201
 
         self.assert_log_path(self.device, self.log_archive)
 
@@ -83,3 +87,10 @@ class TestLogController:
     def test_upload_bad_file(self, setup):
         response = self.app.post('/log/upload', data={'file': (BytesIO(b'bad file content'), 'badfile.txt')})
         assert response.status_code == 400
+
+    def test_download_dataset(self, setup):
+        self.__upload_file()
+        response = self.app.get('/log/download-dataset/new')
+
+        assert response.status_code == 200
+        assert response.mimetype == 'application/zip'
