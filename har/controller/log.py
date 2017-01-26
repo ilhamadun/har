@@ -86,7 +86,7 @@ def download_dataset(dataset_type='new'):
         if not dataset:
             dataset = dataset_handler.create_dataset_archive(logs)
 
-        dataset_directory = os.path.dirname(dataset.path)
+        dataset_directory = os.path.join(os.getcwd(), os.path.dirname(dataset.path))
         dataset_name = os.path.basename(dataset.path)
         return send_from_directory(dataset_directory, dataset_name, as_attachment=True)
 

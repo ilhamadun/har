@@ -43,7 +43,7 @@ def _move_to_unique_path(archive_path, file_name):
     final_directory = os.path.join(app.config['UPLOAD_FOLDER'], final_directory)
     final_path = os.path.join(final_directory, file_name)
     os.makedirs(final_directory)
-    os.rename(archive_path, os.path.join(final_directory, final_path))
+    os.rename(archive_path, final_path)
 
     return final_path
 
