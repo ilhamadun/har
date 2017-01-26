@@ -32,7 +32,7 @@ def create_dataset(log_files, output_path):
                 logs.append(str(activity_id))
                 merged_logs.append(logs)
 
-    merged_metadata = ["DATASET", metadata[1], metadata[2], len(merged_logs)]
+    merged_metadata = [len(merged_logs), metadata[2]]
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(merged_metadata)
