@@ -1,7 +1,7 @@
 """Controller for request to /subject URLs"""
 
 from flask import request, jsonify, render_template
-from har.handler.subject import create_subject, delete_subject, get_latest
+from har.model.subject import create_subject, delete_subject, get_latest
 from .url import redirect_back
 
 

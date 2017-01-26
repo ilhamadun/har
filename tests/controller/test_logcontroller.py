@@ -5,9 +5,8 @@ import pytest
 from io import StringIO, BytesIO
 
 import har
-from har.handler import log
-from har.handler.subject import create_subject
-from har.model import Log
+from har.model import log, Log
+from har.model.subject import create_subject
 from tests.log.mocklog import MockLog
 
 

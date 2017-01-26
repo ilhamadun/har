@@ -1,7 +1,7 @@
 """Controller for request to /status URLs"""
 
 from flask import render_template
-from har.handler import log, subject
+from har.model import log, subject
 
 def status():
     """Render Status page

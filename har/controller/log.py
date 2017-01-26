@@ -3,9 +3,9 @@
 import os
 from flask import request, send_from_directory, render_template
 from flask.json import jsonify
-from har.handler.subject import authenticate
-from har.handler import log as log_handler
-from har.handler import dataset as dataset_handler
+from har.model.subject import authenticate
+from har.model import log as log_handler
+from har.model import dataset as dataset_handler
 from .url import redirect_back
 
 

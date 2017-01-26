@@ -7,7 +7,7 @@ A collection of function to process log file.
 import csv
 import os
 from zipfile import ZipFile, ZIP_DEFLATED
-from har.handler import log
+from har.model import log
 from har.log.activity import get_activity_id
 
 def create_dataset(log_files, output_path):
