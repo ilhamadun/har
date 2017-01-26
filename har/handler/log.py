@@ -170,3 +170,25 @@ def get_pending_logs(limit=None):
         logs = Log.query.filter_by(status=Log.STATUS_PENDING).order_by(desc(Log.id)).all()
 
     return logs
+
+def delete_log(id):
+    """Delete log with given id.
+
+    Args:
+    device: Log id
+
+    Returns:
+    Whether delete is success or not
+
+    """
+    log = Log.query.filter_by(id=id).first()
+
+    if log:
+        os.remove(log.path)
+        db.session.delete(log)
+        db.session.commit()
+
+        return True
+
+    else:
+        return False

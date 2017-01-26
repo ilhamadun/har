@@ -6,6 +6,7 @@ from flask.json import jsonify
 from har.handler.subject import authenticate
 from har.handler import log as log_handler
 from har.handler import dataset as dataset_handler
+from .url import redirect_back
 
 
 def upload():
@@ -98,3 +99,8 @@ def download_dataset(dataset_type='new'):
         response.status_code = 400
 
         return response
+
+def delete(log_id):
+    """Delete log for given id"""
+    log_handler.delete_log(log_id)
+    return redirect_back('index')

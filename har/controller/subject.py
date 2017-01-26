@@ -1,7 +1,8 @@
 """Controller for request to /subject URLs"""
 
 from flask import request, jsonify
-from har.handler.subject import create_subject
+from har.handler.subject import create_subject, delete_subject
+from .url import redirect_back
 
 
 def register():
@@ -36,3 +37,9 @@ def register():
     response.status_code = 201
 
     return response
+
+def delete(device):
+    """Delete subject for given device identifier."""
+    delete_subject(device)
+    return redirect_back('index')
+

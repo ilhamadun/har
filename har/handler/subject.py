@@ -84,3 +84,24 @@ def get_latest(limit):
         A list of har.model.Subject entry from database.
     """
     return Subject.query.order_by(desc(Subject.device)).limit(limit).all()
+
+def delete_subject(device):
+    """Delete subject with given device id.
+
+    Args:
+        device: Device identifier
+
+    Returns:
+        Whether delete is success or not
+
+    """
+    subject = get_subject(device)
+
+    if subject:
+        db.session.delete(subject)
+        db.session.commit()
+
+        return True
+
+    else:
+        return False
