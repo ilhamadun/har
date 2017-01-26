@@ -39,10 +39,8 @@ def test_create_dataset(log_files):
         metadata = next(reader)
         data = next(reader)
 
-    assert metadata[0] == 'DATASET'
-    assert int(metadata[1]) == 2
-    assert int(metadata[2]) == 6
-    assert int(metadata[3]) == 40
+    assert metadata[0] == '40'
+    assert int(metadata[1]) == 6
     assert len(data) == 7
 
     os.remove(output_path)
