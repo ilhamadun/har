@@ -16,7 +16,7 @@ class Log(db.Model):
     STATUS_TRAINED = "trained"
 
     id = db.Column(db.Integer, primary_key=True)
-    subject_id = db.Column(db.Integer, db.ForeignKey('subject.device'))
+    subject_id = db.Column(db.String(40), db.ForeignKey('subject.device'))
     log_type = db.Column(db.String(40))
     activity = db.Column(db.String(40))
     sensor_placement = db.Column(db.String(40))
