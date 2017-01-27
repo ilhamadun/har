@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     """Schema for User"""
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(40), unique=True)
-    password = db.Column(db.String(40))
+    password = db.Column(db.String(60))
     created_at = db.Column(db.DateTime)
     last_login = db.Column(db.DateTime)
 
