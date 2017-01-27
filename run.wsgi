@@ -4,7 +4,7 @@ import logging
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0, '/var/www/har/')
 
-from har import app
+from har import app as application
 
 app.config.from_object('config')
 app.config.from_pyfile('config.py')
