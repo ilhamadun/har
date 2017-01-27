@@ -57,15 +57,21 @@ def authenticate(email, password):
     """
     user = get_user_by_email(email)
 
-    if isinstance(user.password, str):
-        clean_password = user.password.encode()
-    else:
-        clean_password = user.password
+    if user:
+        if isinstance(user.password, str):
+            clean_password = user.password.encode()
+        else:
+            clean_password = user.password
 
-    if bcrypt.checkpw(password.encode(), clean_password):
-        return True
-    else:
-        return False
+        if bcrypt.checkpw(password.encode(), clean_password):
+            return True
+
+    return False
+
+def update_last_login(user, time=datetime.now()):
+    """Update last login column for a user"""
+    user.last_login = time
+    db.session.commit()
 
 def get_user_by_email(email):
     """Retreive user by email"""

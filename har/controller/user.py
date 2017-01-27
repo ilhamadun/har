@@ -3,7 +3,7 @@
 from datetime import datetime
 from flask import request, abort, render_template
 from flask_login import login_user, logout_user
-from har.model.user import get_user_by_email, authenticate
+from har.model.user import get_user_by_email, authenticate, update_last_login
 from .url import redirect_back
 
 def login():
@@ -15,12 +15,9 @@ def login():
         if authenticate(email, password):
             user = get_user_by_email(email)
             login_user(user)
-            user.last_login = datetime.now()
+            update_last_login(user)
 
-            return redirect_back()
-
-        else:
-            abort(401)
+        return redirect_back()
 
     else:
         return render_template('login.html')

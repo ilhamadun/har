@@ -29,6 +29,16 @@ def test_login(setup, create_user):
     test_user = user.get_user_by_id(create_user)
     assert response.status_code == 302
     assert test_user.is_authenticated
+    assert test_user.last_login
+
+def test_login_failed(setup, create_user):
+    test_app = app.test_client()
+    response = test_app.post('/login', data={
+        'email': 'asd',
+        'password': 'asd'
+    })
+
+    assert response.status_code == 302
 
 def test_unauthorized_access(setup):
     test_app = app.test_client()
