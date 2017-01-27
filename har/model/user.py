@@ -57,7 +57,12 @@ def authenticate(email, password):
     """
     user = get_user_by_email(email)
 
-    if bcrypt.checkpw(password.encode(), user.password):
+    if isinstance(user.password, str):
+        clean_password = user.password.encode()
+    else:
+        clean_password = user.password
+
+    if bcrypt.checkpw(password.encode(), clean_password):
         return True
     else:
         return False
