@@ -6,8 +6,8 @@ sys.path.insert(0, '/var/www/har/')
 
 from har import app as application
 
-app.config.from_object('config')
-app.config.from_pyfile('config.py')
+application.config.from_object('config')
+application.config.from_pyfile('config.py')
 
 if __name__ == '__main__':
-    app.run(host=app.config['HOST'])
+    application.run(host=application.config['HOST'])
